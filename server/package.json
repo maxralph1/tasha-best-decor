@@ -1,0 +1,14 @@
+{
+  "name": "tashabestdecor-server",
+  "version": "1.0.0",
+  "description": "\"Tasha Best Decor\" Server for Company's Web and Mobile Applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Maximillian Raphaels",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
