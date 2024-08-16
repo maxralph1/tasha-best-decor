@@ -2,6 +2,7 @@
   "name": "tashabestdecor-client",
   "private": true,
   "version": "1.0.0",
+  "description": "\"Tasha Best Decor\" Client for Company's Web and Mobile Applications",
   "type": "module",
   "scripts": {
     "dev": "vite",
