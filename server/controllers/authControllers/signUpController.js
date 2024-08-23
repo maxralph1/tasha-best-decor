@@ -56,7 +56,7 @@ const signUpUser = asyncHandler(async (req, res) => {
 
     user.save()
         .then(function () {
-            res.status(201).json({ message: `User ${user?.username} created` });
+            res.status(201).json({ success: `User ${user?.username} created` });
         })
         .catch(function (error) {
             return res.status(400).json({ message: "An error occured", details: `${error}` });

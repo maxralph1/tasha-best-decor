@@ -1,4 +1,6 @@
 import asyncHandler from 'express-async-handler'; 
+import slug from 'slug';
+const slugIt = slug; 
 import SubCategory from '../models/SubCategory.js'; 
 
 
@@ -17,6 +19,7 @@ const createSubCategory = asyncHandler(async (req, res) => {
     const subCategory = new SubCategory({
         added_by: req?.user_id, 
         category, 
+        slug: slugIt(title),
         title, 
         description
     }); 

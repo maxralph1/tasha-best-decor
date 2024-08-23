@@ -1,20 +1,43 @@
 import asyncHandler from 'express-async-handler'; 
+import slug from 'slug';
+const slugIt = slug; 
 import Category from '../models/Category.js'; 
+import SubCategory from '../models/SubCategory.js'; 
 
 
-const getCategories = asyncHandler(async (req, res) => {
+const getCategories = asyncHandler(async (req, res) => { 
+    const page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10; 
+
+    const skip = (page - 1) * limit; 
+
 	const categories = await Category.find()
                                     .sort('-created_at')
-                                    .populate({
-                                        path: 'sub_categories'
-                                    })
-                                    .populate({
-                                        path: 'products'
-                                    })
+                                    .skip(skip)
+                                    .limit(limit)
                                     .lean(); 
-    if (!categories?.length) return res.status(404).json({ message: "No categories found!" });
+    if (!categories?.length) return res.status(404).json({ message: "No categories found!" }); 
 
-	res.json({ data: categories });
+    const total = await Category.countDocuments();
+
+    let categoriesList = []; 
+
+    const updatePromises = categories?.map(async categoryItem => { 
+        let foundSubCategories = await SubCategory.find({ category: categoryItem?._id }).exec(); 
+        categoryItem['sub_categories'] = foundSubCategories; 
+
+        categoriesList.push(categoryItem);
+    }); 
+
+    await Promise.all(updatePromises); 
+
+	res.json({ 
+                page, 
+                limit, 
+                totalPages: Math.ceil(total / limit), 
+                totalResults: total,
+                data: categoriesList 
+            });
 });
 
 const createCategory = asyncHandler(async (req, res) => {
@@ -23,6 +46,7 @@ const createCategory = asyncHandler(async (req, res) => {
 
     const category = new Category({
         added_by: req?.user_id, 
+        slug: slugIt(title),
         title, 
         description
     }); 
@@ -41,10 +65,17 @@ const getCategory = asyncHandler(async (req, res) => {
 
 	const category = await Category.findOne({ _id: id })
 		.select(['-created_at', '-updated_at', '-deleted_at'])
-		.lean();
+		.lean(); 
 
-	if (!category) return res.status(404).json({ message: `No category matches category ${req?.params?.id}!` });
-	res.status(200).json({ data: category });
+    if (!category) return res.status(404).json({ message: `No category matches category ${req?.params?.id}!` }); 
+
+    const subCategories = await SubCategory.find({ category: category?._id })
+                                            .sort('-created_at')
+                                            .lean(); 
+
+    category['sub_categories'] = subCategories;
+
+	res.status(200).json({ data: category }); 
 }); 
 
 const updateCategory = asyncHandler(async (req, res) => {

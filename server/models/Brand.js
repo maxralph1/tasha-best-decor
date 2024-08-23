@@ -17,10 +17,10 @@ const brandSchema = new Schema({
             type: String, 
             required: true 
         }, 
-        logo: {
-            type: String, 
-            default: ''
-        },
+        logo_path: { 
+            public_id: { type: String, default: '' },
+            url: { type: String, default: '' }
+        }, 
         web_address: {
             type: String, 
             default: ''

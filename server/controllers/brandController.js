@@ -1,17 +1,43 @@
 import asyncHandler from 'express-async-handler'; 
+import slug from 'slug';
+const slugIt = slug; 
+import Product from '../models/Product.js'; 
 import Brand from '../models/Brand.js'; 
 
 
-const getBrands = asyncHandler(async (req, res) => {
+const getBrands = asyncHandler(async (req, res) => { 
+    const page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10; 
+
+    const skip = (page - 1) * limit; 
+
 	const brands = await Brand.find()
                                 .sort('-created_at')
-                                .populate({
-                                    path: 'products'
-                                })
+                                .skip(skip)
+                                .limit(limit)
                                 .lean(); 
-    if (!brands?.length) return res.status(404).json({ message: "No brands found!" });
+    if (!brands?.length) return res.status(404).json({ message: "No brands found!" }); 
 
-	res.json({ data: brands });
+    const total = await Brand.countDocuments(); 
+
+    let brandsList = []; 
+
+    const updatePromises = brands?.map(async brand => { 
+        let foundProducts = await Product.find({ category: brand?._id }).exec(); 
+        brand['products'] = foundProducts; 
+
+        brandsList.push(brand);
+    }); 
+
+    await Promise.all(updatePromises); 
+
+    res.json({ 
+                page, 
+                limit, 
+                totalPages: Math.ceil(total / limit), 
+                totalResults: total,
+                data: brandsList 
+            });
 });
 
 const createBrand = asyncHandler(async (req, res) => {
@@ -27,6 +53,7 @@ const createBrand = asyncHandler(async (req, res) => {
 
     const brand = new Brand({
         user: req?.user_id, 
+        slug: slugIt(title),
         title, 
         description, 
         logo, 
@@ -48,12 +75,33 @@ const createBrand = asyncHandler(async (req, res) => {
 }); 
 
 const getBrand = asyncHandler(async (req, res) => { 
-    const { id } = req?.params;
+    const page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10; 
+
+    const skip = (page - 1) * limit; 
+
+    const { id } = req?.params; 
+
 	const brand = await Brand.findOne({ _id: id })
 		.select(['-created_at', '-updated_at', '-deleted_at'])
 		.lean();
 
-	if (!brand) return res.status(404).json({ message: `No brand matches brand ${id}!` });
+	if (!brand) return res.status(404).json({ message: `No brand matches brand ${id}!` }); 
+
+    const products = await Product.find({ brand: brand?._id })
+                                            .sort('-created_at')
+                                            .skip(skip)
+                                            .limit(limit)
+                                            .lean(); 
+
+    const total = await Product.countDocuments();
+
+    brand['products'] = products;
+    brand['products']['page'] = page;
+    brand['products']['limit'] = limit;
+    brand['products']['totalPages'] = Math.ceil(total / limit);
+    brand['products']['totalResults'] = total;
+
 	res.status(200).json({ data: brand });
 }); 
 

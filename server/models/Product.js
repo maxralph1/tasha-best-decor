@@ -24,10 +24,14 @@ const productSchema = new Schema({
             type: String, 
             required: true 
         }, 
-        initial_discount_value: { 
+        initial_retail_price: { 
             type: String, 
             required: true 
         }, 
+        // initial_discount_value: { 
+        //     type: String, 
+        //     required: true 
+        // }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 
