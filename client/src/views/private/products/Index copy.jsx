@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'; 
-import ReactQuill, { Quill } from 'react-quill';
+import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
@@ -8,24 +8,42 @@ import { useProducts } from '@/hooks/useProducts.jsx';
 import { useProduct } from '@/hooks/useProduct.jsx'; 
 import Layout from '@/components/private/Layout.jsx'; 
 
-export default function Index() { 
+export default function IndexOLD() { 
     const { categories, getCategories } = useCategories(); 
     const { products, getProducts } = useProducts(); 
     const { product, createProduct, updateProduct, deleteProduct, destroyProduct, restoreProduct } = useProduct(); 
-    const [features, setFeatures] = useState(''); 
+    const [features, setFeatures] = useState([]); 
+    const [images, setImages] = useState([]); 
     const [productCategories, setProductCategories] = useState([]); 
-
-    console.log(products); 
+    const [objectKey, setObjectKey] = useState(0); 
+    const [productFeatures, setProductFeatures] = useState({}); 
+    // setObjectKey(objectKey + 1); 
+    //                             await addFeatureObject(e.target.features.value); 
 
     async function addCategoryToArray(category) {
+        const newItem = category; 
+
         if (productCategories?.includes(category)) {
-            setProductCategories(productCategories.filter(categoryItem => categoryItem !== category))
+            // return; 
+            setProductCategories(productCategories.filter(categoryItem => categoryItem !== newItem))
         } else {
-            setProductCategories([...productCategories, category]); 
+            setProductCategories([...productCategories, newItem]); 
         }
+
+        // console.log(productCategories);
     } 
 
+    async function addFeatureObject(feature) {
+        setProductFeatures(prevFeature => ({
+            ...prevFeature, 
+            [objectKey]: feature
+        })); 
+
+        product.data.features = '';
+    }
+
     console.log(productCategories); 
+    console.log(productFeatures); 
 
     async function addProduct(e) {
         e.preventDefault(); 
@@ -36,12 +54,8 @@ export default function Index() {
         const formData = new FormData(); 
         product.data.brand && formData.append('brand', product.data.brand); 
         product.data.discount && formData.append('discount', product.data.discount); 
-        formData.append('features', features); 
-        formData.append('image_1', product.data.image_1); 
-        formData.append('image_2', product.data.image_2); 
-        formData.append('image_3', product.data.image_3); 
-        formData.append('image_4', product.data.image_4); 
-        formData.append('image_5', product.data.image_5); 
+        formData.append('features', productFeatures); 
+        // formData.append('images', images); 
         formData.append('categories', productCategories); 
         formData.append('title', product.data.title); 
         formData.append('description', product.data.description); 
@@ -54,11 +68,7 @@ export default function Index() {
         product.data.brand = ''; 
         product.data.discount = ''; 
         product.data.features = ''; 
-        product.data.image_1 = ''; 
-        product.data.image_2 = ''; 
-        product.data.image_3 = ''; 
-        product.data.image_4 = ''; 
-        product.data.image_5 = ''; 
+        product.data.images = ''; 
         product.data.productCategories = ''; 
         product.data.title = ''; 
         product.data.description = ''; 
@@ -73,12 +83,12 @@ export default function Index() {
         <Layout>
             <section>
                 {(products?.data?.length > 0) 
-                    ? products?.data?.map(product => {
-                        return (
-                            <div>{product.features}</div>
-                        )
-                    }) 
-                        : <></> }
+                ? products?.data?.map(product => {
+                    return (
+                        <></>
+                    )
+                }) 
+                    : <></> }
             </section> 
 
             <section>
@@ -110,14 +120,39 @@ export default function Index() {
                             required ></textarea> 
                         <label htmlFor="description">Description</label>
                     </div> 
+
                     
                     <div>
-                        <ReactQuill 
-                            theme="snow" 
-                            value={ features } 
-                            onChange={ setFeatures } />
+                        <textarea 
+                            name="features" 
+                            id="features" 
+                            value={ product.data.features ?? '' }
+                            onChange={ e => product.setData({
+                                ...product.data,
+                                features: e.target.value,
+                            }) }
+                            placeholder="e.g. Gucci" ></textarea> 
                         <label htmlFor="features">Features</label> 
+
+                        <span 
+                            className="btn btn-dark"
+                            onClick={ async () => { 
+                                setObjectKey(objectKey + 1); 
+                                await addFeatureObject(product.data.features); 
+                            } }>
+                                Add Feature
+                        </span>
                     </div> 
+
+                    {(Object.entries(productFeatures)?.length > 0) && 
+                        <div>Product Features</div>} 
+
+                    {Object.entries(productFeatures)?.map(([key, value]) => {
+                        return (
+                            <li key={key}><strong>{key}:</strong> {value}</li>
+                        )
+                    })}
+
 
                     <div>
                         <input 
@@ -190,76 +225,6 @@ export default function Index() {
                                     <option value="mur">MUR</option> 
                             </select>
                         </ul>
-                    </div> 
-
-                    <div>
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            name="image_1" 
-                            id="image_1" 
-                            className='form-control' 
-                            onChange={ e => product.setData({
-                                ...product.data,
-                                image_1: e.target.files[0],
-                            }) } /> 
-                        <label htmlFor="image_1">Image 1</label>
-                    </div> 
-
-                    <div>
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            name="image_2" 
-                            id="image_2" 
-                            className='form-control' 
-                            onChange={ e => product.setData({
-                                ...product.data,
-                                image_2: e.target.files[0],
-                            }) } /> 
-                        <label htmlFor="image_2">Image 2</label>
-                    </div> 
-
-                    <div>
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            name="image_3" 
-                            id="image_3" 
-                            className='form-control' 
-                            onChange={ e => product.setData({
-                                ...product.data,
-                                image_3: e.target.files[0],
-                            }) } /> 
-                        <label htmlFor="image_3">Image 3</label>
-                    </div> 
-
-                    <div>
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            name="image_4" 
-                            id="image_4" 
-                            className='form-control' 
-                            onChange={ e => product.setData({
-                                ...product.data,
-                                image_4: e.target.files[0],
-                            }) } /> 
-                        <label htmlFor="image_4">Image 4</label>
-                    </div> 
-
-                    <div>
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            name="image_5" 
-                            id="image_5" 
-                            className='form-control' 
-                            onChange={ e => product.setData({
-                                ...product.data,
-                                image_5: e.target.files[0],
-                            }) } /> 
-                        <label htmlFor="image_5">Image 5</label>
                     </div> 
 
                     <div>

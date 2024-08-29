@@ -44,7 +44,11 @@ app.use(urlencoded({ extended: true }));
 app.use(cors(corsOptions)); 
 // app.use(cors()); 
 app.use(cookieParser()); 
-app.use(fileupload({useTempFiles: true})); 
+// app.use(fileupload({useTempFiles: true})); 
+app.use(fileupload({
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+}));
 
 app.use('/', expressStatic(join(__dirname, 'public'))); 
 app.use('/api', expressStatic(join(__dirname, 'public'))); 

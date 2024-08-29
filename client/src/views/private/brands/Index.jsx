@@ -16,12 +16,14 @@ export default function Index() {
     const [description, setDescription] = useState('');
 
     async function addBrand(e) {
-        e.preventDefault();
+        e.preventDefault(); 
+
+        console.log(brand.data);
 
         const formData = new FormData(); 
         formData.append('title', brand.data.title); 
         formData.append('description', brand.data.description); 
-        brand.data.logo_path && formData.append('logo_path', brand.data.logo_path);
+        brand.data.logo && formData.append('logo', brand.data.logo);
         formData.append('web_address', brand.data.web_address); 
         formData.append('facebook', brand.data.facebook); 
         formData.append('instagram', brand.data.instagram); 
@@ -33,7 +35,7 @@ export default function Index() {
 
         brand.data.title = '';
         brand.data.description = '';
-        brand.data.logo_path = '';
+        brand.data.logo = '';
         brand.data.web_address = '';
         brand.data.facebook = '';
         brand.data.instagram = '';
@@ -119,14 +121,14 @@ export default function Index() {
                     <div>
                         <input 
                             type="file" 
-                            accept="image/*"
-                            name="logo_path" 
-                            id="logo_path" 
+                            accept="image/*" 
+                            name="logo" 
+                            id="logo" 
                             className='form-control' 
                             onChange={ e => brand.setData({
                                 ...brand.data,
-                                logo_path: e.target.files[0],
-                            }) } />
+                                logo: e.target.files[0],
+                            }) } /> 
                     </div> 
                     <div>
                         <input 

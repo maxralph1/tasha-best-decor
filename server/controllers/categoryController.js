@@ -6,10 +6,10 @@ import SubCategory from '../models/SubCategory.js';
 
 
 const getCategories = asyncHandler(async (req, res) => { 
-    const page = parseInt(req?.query?.page) || 1;
+    const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
 
-    const skip = (page - 1) * limit; 
+    const skip = (current_page - 1) * limit; 
 
 	const categories = await Category.find()
                                     .sort('-created_at')
@@ -32,10 +32,12 @@ const getCategories = asyncHandler(async (req, res) => {
     await Promise.all(updatePromises); 
 
 	res.json({ 
-                page, 
-                limit, 
-                totalPages: Math.ceil(total / limit), 
-                totalResults: total,
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(total / limit), 
+                    total_results: total
+                }, 
                 data: categoriesList 
             });
 });

@@ -11,14 +11,12 @@ const validatePhoneNumber = (phone) => {
 
 const addressSchema = new Schema({
         user: { type: Schema.Types.ObjectId, ref: 'User' }, 
-        full_name: { 
-            type: String, 
-            required: true 
-        }, 
+        full_name: { type: String, required: true }, 
         phone: { 
             type: String, 
             required: [true, 'Phone number is required'], 
             unique: true, 
+            sparse: true, 
             validate: {
                 validator: validatePhoneNumber, 
                 message: props => `${props.value} is not a valid phone number.`
@@ -30,14 +28,8 @@ const addressSchema = new Schema({
             maxLength: 245,
             required: true 
         }, 
-        address_line_2: { 
-            type: String, 
-            maxLength: 245
-        }, 
-        post_code: { 
-            type: String, 
-            maxLength: 15
-        }, 
+        address_line_2: { type: String, maxLength: 245 }, 
+        post_code: { type: String, maxLength: 15 }, 
         town_city: { 
             type: String, 
             minLength: 1, 
@@ -54,10 +46,7 @@ const addressSchema = new Schema({
             maxLength: 123, 
             default: 'Mauritius'
         }, 
-        delivery_instructions: { 
-            type: String, 
-            maxLength: 245
-        }, 
+        delivery_instructions: { type: String, maxLength: 245 }, 
         deleted_at: { type: String, default: null }
     }, 
     {

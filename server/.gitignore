@@ -1,4 +1,4 @@
+.env
 node_modules
 dev-notes.txt 
-.env
 log/

@@ -14,11 +14,11 @@ export function useBrands(page = 1, limit = 10) {
         }
     }, [page, limit]); 
 
-    async function getBrands({page, limit}, { signal } = {}) {
+    async function getBrands(page, { signal } = {}) {
         return axiosInstance.get(`brands?page=${page}&limit=${limit}`, { signal }) 
             .then(response => setBrands(response?.data))
             .catch(error => console.log(error));
     } 
 
     return { brands, getBrands }; 
-}
+} 
