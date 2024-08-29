@@ -14,11 +14,11 @@ export function useCategories(page = 1, limit = 2) {
         }
     }, [page, limit]); 
 
-    async function getCategories({page, limit}, { signal } = {}) {
+    async function getCategories(page, { signal } = {}) {
         return axiosInstance.get(`categories?page=${page}&limit=${limit}`, { signal }) 
             .then(response => setCategories(response?.data))
             .catch(error => console.log(error));
     } 
 
     return { categories, getCategories }; 
-}
+} 

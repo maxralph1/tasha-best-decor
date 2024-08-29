@@ -4,26 +4,11 @@ const Schema = mongoose.Schema;
 
 const discountSchema = new Schema({
         added_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
-        title: { 
-            type: String, 
-            required: true 
-        }, 
-        slug: { 
-            type: String, 
-            required: true 
-        }, 
-        code: { 
-            type: String, 
-            required: true 
-        }, 
-        description: { 
-            type: String, 
-            required: true 
-        }, 
-        value: { 
-            type: Number, 
-            required: true 
-        }, 
+        title: { type: String, required: true }, 
+        slug: { type: String, required: true }, 
+        code: { type: String, required: true }, 
+        description: { type: String, required: true }, 
+        value: { type: Number, required: true }, 
         value_unit: { 
             type: String, 
             required: true, 

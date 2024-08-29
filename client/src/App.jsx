@@ -18,6 +18,9 @@ import PrivateBrandsIndex from '@/views/private/brands/Index.jsx';
 import PrivateCategoryShow from '@/views/private/categories/Show.jsx';
 import PrivateCategoriesIndex from '@/views/private/categories/Index.jsx';
 
+import PrivateProductShow from '@/views/private/products/Show.jsx';
+import PrivateProductsIndex from '@/views/private/products/Index.jsx';
+
 import PrivateIndex from '@/views/private/Index.jsx';
 
 import Index from '@/views/public/Index.jsx'; 
@@ -45,6 +48,9 @@ function App() {
             <Route path={ route('home.categories.show') } element={ <PrivateCategoryShow /> } /> 
             <Route path={ route('home.categories.index') } element={ <PrivateCategoriesIndex /> } /> 
 
+            <Route path={ route('home.products.show') } element={ <PrivateProductShow /> } /> 
+            <Route path={ route('home.products.index') } element={ <PrivateProductsIndex /> } /> 
+
             <Route path={ route('home.index') } element={ <PrivateIndex /> } />
           </Route> 
 
@@ -59,4 +65,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

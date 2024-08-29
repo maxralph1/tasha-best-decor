@@ -1,3 +1,4 @@
+import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js';
 import asyncHandler from 'express-async-handler'; 
 import slug from 'slug';
 const slugIt = slug; 
@@ -6,10 +7,10 @@ import Brand from '../models/Brand.js';
 
 
 const getBrands = asyncHandler(async (req, res) => { 
-    const page = parseInt(req?.query?.page) || 1;
+    const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
 
-    const skip = (page - 1) * limit; 
+    const skip = (current_page - 1) * limit; 
 
 	const brands = await Brand.find()
                                 .sort('-created_at')
@@ -32,10 +33,12 @@ const getBrands = asyncHandler(async (req, res) => {
     await Promise.all(updatePromises); 
 
     res.json({ 
-                page, 
-                limit, 
-                totalPages: Math.ceil(total / limit), 
-                totalResults: total,
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(total / limit), 
+                    total_results: total
+                }, 
                 data: brandsList 
             });
 });
@@ -43,7 +46,7 @@ const getBrands = asyncHandler(async (req, res) => {
 const createBrand = asyncHandler(async (req, res) => {
     const { title, 
             description, 
-            logo, 
+            // logo, 
             web_address, 
             facebook, 
             instagram, 
@@ -51,12 +54,24 @@ const createBrand = asyncHandler(async (req, res) => {
             other_social, 
             other_social_handle } = req?.body; 
 
+    const duplicateBrand = await Brand.findOne({ $or: [{ title: title }, { slug: slugIt(title) }] }).lean(); 
+
+    if (duplicateBrand) return res.status(409).json({ message: `Brand ${duplicateBrand.title} already exists` }); 
+
+    const { logo } = req?.files; 
+
+    const brandImageUpload = await cloudinaryImageUpload(logo.tempFilePath, "tasha_best_decor_brand_images"); 
+    if (!brandImageUpload) return res.status(400).json({ message: "Image upload failed" }); 
+
     const brand = new Brand({
         user: req?.user_id, 
         slug: slugIt(title),
         title, 
         description, 
-        logo, 
+        logo_path: { 
+            public_id: brandImageUpload.public_id,
+            url: brandImageUpload.secure_url
+        }, 
         web_address, 
         facebook, 
         instagram, 
@@ -67,7 +82,7 @@ const createBrand = asyncHandler(async (req, res) => {
 
     brand.save()
         .then(() => {
-            res.status(201).json({ success: `Brand ${brand._id} added`, data: brand });
+            res.status(201).json({ success: `Brand ${brand.title} added`, data: brand });
         })
         .catch((error) => {
             if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 

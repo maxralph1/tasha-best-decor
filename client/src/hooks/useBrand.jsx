@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import useAxios from '@/utils/useAxios.jsx'; 
+import swal from 'sweetalert2'; 
 
 
 export function useBrand(id = null) {
@@ -20,27 +21,44 @@ export function useBrand(id = null) {
         }
     }, [id]);
 
-    async function createBrand(title, description) {
+    async function createBrand(brand) {
         setLoading(true); 
         setErrors({}); 
 
         console.log(); 
-        return axiosInstance.post('brands', {title, description})
+        return axiosInstance.post('brands', brand)
             .then(response => {
                 setData(response?.data)
-                console.log(response)
+                console.log(response);
             })
             .catch(error => {
                 setErrors(error?.response); 
+                if (error?.response?.status == 409) {
+                    swal.fire({
+                        text: `${error?.response?.data?.message}`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                } else {
+                    swal.fire({
+                        text: `${error?.response?.status}: An error occured!`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                }
                 console.log(error);
             })
             .finally(() => setLoading(false));
     } 
 
-    async function getBrand({id, page = 1, limit = 10}, { signal } = {}) {
+    async function getBrand(id, { signal } = {}) {
         setLoading(true); 
 
-        return axiosInstance.get(`brands/${id}?page=${page}&limit=${limit}`, { signal })
+        return axiosInstance.get(`brands/${id}`, { signal })
             .then(response => setData(response?.data?.data))
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false));

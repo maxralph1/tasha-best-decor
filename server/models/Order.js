@@ -3,10 +3,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema; 
 
 const orderSchema = new Schema({
-        user: { 
-            type: Schema.Types.ObjectId, 
-            ref: 'User' 
-        }, 
+        user: { type: Schema.Types.ObjectId,  ref: 'User' }, 
         order_items: [
             {
                 name: { type: String, required: true },
@@ -22,32 +19,19 @@ const orderSchema = new Schema({
         ], 
         delivery_mode: { type: Schema.Types.ObjectId, ref: 'DeliveryMode' }, 
         payment_mode: { type: Schema.Types.ObjectId, ref: 'PaymentMode' }, 
-        order_key: { 
-            type: String, 
-            required: true 
-        },  
+        order_key: { type: String, required: true },  
         billing_status: { 
             type: String, 
             required: true, 
             enum: ['not-paid', 'pay-on-delivery', 'paid-with-cash', 'paid-with-card', 'paid-with-paypal'], 
             default: 'not-paid'
         },  
-        total_to_be_paid: { 
-            type: Number, 
-        }, 
+        total_to_be_paid: { type: Number }, 
         paid: { type: Boolean, default: false }, 
-        total_paid: { 
-            type: Number, 
-        }, 
-        total_balance: { 
-            type: Number, 
-        }, 
-        proposed_delivery_start_date: {
-            type: Date
-        },
-        proposed_delivery_destination_reach_date: {
-            type: Date
-        },
+        total_paid: { type: Number }, 
+        total_balance: { type: Number }, 
+        proposed_delivery_start_date: { type: Date },
+        proposed_delivery_destination_reach_date: { type: Date },
         full_name: { 
             type: String, 
             required: true 

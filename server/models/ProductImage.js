@@ -5,13 +5,11 @@ const Schema = mongoose.Schema;
 const productImageSchema = new Schema({
         added_by: { type: Schema.Types.ObjectId, ref: 'User' },   
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
-        slug: { 
-            type: String, 
-            required: true 
-        }, 
-        description: { 
-            type: String, 
-            required: true 
+        // slug: { type: String, required: true }, 
+        // description: { type: String, required: true }, 
+        image_path: { 
+            public_id: { type: String, default: '' },
+            url: { type: String, default: '' }
         }, 
         is_product_default: { type: Boolean, default: false }, 
         deleted_at: { type: String, default: null }, 

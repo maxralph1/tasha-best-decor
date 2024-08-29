@@ -15,5 +15,5 @@ const categoryProductSchema = new Schema({
 );
 
 
-let CategoryProduct = mongoose.model("Category", categoryProductSchema);
+let CategoryProduct = mongoose.model("CategoryProduct", categoryProductSchema);
 export default CategoryProduct; 

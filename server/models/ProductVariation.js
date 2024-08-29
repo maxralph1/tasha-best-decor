@@ -2,18 +2,14 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema; 
 
-const productReviewSchema = new Schema({ 
+const productVariationSchema = new Schema({ 
         added_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
-        product_unit: { type: Schema.Types.ObjectId, ref: 'ProductUnit' }, 
         title: { type: String, required: true }, 
-        content: { type: String, required: true }, 
-        rating: { 
-            type: String, 
-            required: true, 
-            enum: [1, 2, 3, 4, 5], 
-            default: 5
-        }, 
+        slug: { type: String, required: true }, 
+        description: { type: String, required: true }, 
+        retail_price: { type: String, required: true }, 
+        initial_retail_price: { type: String }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 
@@ -23,5 +19,5 @@ const productReviewSchema = new Schema({
 );
 
 
-let ProductReview = mongoose.model("ProductReview", productReviewSchema);
-export default ProductReview; 
+let ProductVariation = mongoose.model("ProductVariation", productVariationSchema);
+export default ProductVariation; 
